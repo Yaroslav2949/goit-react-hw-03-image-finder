@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AppStyle } from './App.styled';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import { getSearch } from 'services/getSearch'; // отримання даних пошуку
 import { Searchbar } from './Searchbar/Searchbar'; // рядок пошуку
@@ -101,11 +102,7 @@ export class App extends Component {
     return (
       <div>
         {/* Спливаюче повідомлення */}
-        <ToastContainer
-          autoClose={1500}
-         
-          theme="dark"
-        />
+        <ToastContainer autoClose={1500} theme="dark" />
 
         {/*текстове поле для введення запиту */}
         <Searchbar handleSubmit={this.handleSubmit} />
@@ -118,7 +115,9 @@ export class App extends Component {
         )}
 
         {/* відображення списку зображень */}
-        <ImageGallery togleModal={this.openModal} images={images} />
+        <AppStyle>
+          <ImageGallery togleModal={this.openModal} images={images} />
+        </AppStyle>
 
         {/* Перевіряємо, чи відбувається завантаження */}
         {loading && <Loader />}
