@@ -13,6 +13,7 @@ export class App extends Component {
   state = {
     search: '',
     images: [],
+    
     page: 1,
     total: 1,
     loading: false, //маяк, який показує, чи відбувається завантаження
@@ -57,12 +58,20 @@ export class App extends Component {
         this.setState({ loading: false }); // вимикаємо індикатор завантаження
       });
   };
+  // Функція, яка викликається при натисканні на кнопку "Search".
+  handleSubmit = search => {
+    // Очищаємо масив з картинками, а також ставимо початкові значення для сторінки,
+    // загальної кількості картинок, флагів і помилок.
+    this.setState({
+      search,
+      images: [],
+      page: 1,
+      total: 1,
 
-  // Функція, яка викликається при натисканні кнопки "Load more".
-  clickLoad = () => {
-    this.setState(prevSt => ({
-      page: prevSt.page + 1, // збільшуємо номер сторінки на +1
-    }));
+      loading: false,
+      error: null,
+      empty: false,
+    });
   };
 
   // Функція, яка викликається при натисканні на картинку.
@@ -73,21 +82,6 @@ export class App extends Component {
     });
   };
 
-  // Функція, яка викликається при натисканні на кнопку "Search".
-  handleSubmit = search => {
-    // Очищаємо масив з картинками, а також ставимо початкові значення для сторінки,
-    // загальної кількості картинок, флагів і помилок.
-    this.setState({
-      search,
-      images: [],
-      page: 1,
-      total: 1,
-      loading: false,
-      error: null,
-      empty: false,
-    });
-  };
-
   // Функція, яка викликається при натисканні на кнопку "Close".
   closeModal = () => {
     // Використовуємо setState з функцією, яка приймає попередній стан і повертає новий.
@@ -95,15 +89,17 @@ export class App extends Component {
       return { showModal: !showModal };
     });
   };
-
+  // Функція, яка викликається при натисканні кнопки "Load more".
+  clickLoad = () => {
+    this.setState(prevSt => ({
+      page: prevSt.page + 1, // збільшуємо номер сторінки на +1
+    }));
+  };
   render() {
-    const { empty, error, loading, images, total, page, showModal } =
+    const { empty, error, loading, images,  showModal } =
       this.state;
     return (
       <div>
-        {/* Спливаюче повідомлення */}
-        <ToastContainer autoClose={1500} theme="dark" />
-
         {/*текстове поле для введення запиту */}
         <Searchbar handleSubmit={this.handleSubmit} />
 
@@ -115,9 +111,13 @@ export class App extends Component {
         )}
 
         {/* відображення списку зображень */}
-        <AppStyle>
-          <ImageGallery togleModal={this.openModal} images={images} />
-        </AppStyle>
+
+        {images.length > 0 && !error && (
+          <AppStyle>
+            <ImageGallery togleModal={this.openModal} images={images} />
+          </AppStyle>
+        )}
+       
 
         {/* Перевіряємо, чи відбувається завантаження */}
         {loading && <Loader />}
@@ -125,12 +125,14 @@ export class App extends Component {
         {/* Перевіряємо, чи є результати пошуку порожніми */}
         {empty && (
           <h2 style={{ textAlign: 'center' }}>
-            Sorry. There are no images ... 😭
+            Sorry. There are no images ...try againe
           </h2>
         )}
 
         {/* Перевіряємо, чи потрібно відображати кнопку "Load more" */}
-        {total / 12 > page && <Button clickLoad={this.clickLoad} />}
+        {!loading && images.length >= 12 && !error && (
+          <Button clickLoad={this.clickLoad} />
+        )}
 
         {/* Перевіряємо, чи потрібно відображати модальне вікно */}
         {showModal && (
@@ -138,6 +140,8 @@ export class App extends Component {
             <img src={this.state.largeImageURL} alt={this.state.alt} />
           </Modal>
         )}
+        {/* Спливаюче повідомлення */}
+        <ToastContainer autoClose={1500} theme="dark" />
       </div>
     );
   }

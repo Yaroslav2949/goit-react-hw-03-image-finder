@@ -5,11 +5,17 @@ import css from './ImageGallery.module.css'; // імпортуємо стилі
 // Функціональний компонент, який відповідає за галерею.
 export const ImageGallery = ({ images, togleModal }) => {
   return (
-    <>
-      <ul className={css.gallery}>
-        <ImageGalleryItem togleModal={togleModal} images={images} />
-      </ul>
-    </>
+    <ul className={css.gallery}>
+      {images.map(({ webformatURL, tags, id, largeImageURL }) => (
+        <ImageGalleryItem
+          key={id}
+          togleModal={togleModal}
+          webformatURL={webformatURL}
+          tags={tags}
+          largeImageURL={largeImageURL}
+        />
+      ))}
+    </ul>
   );
 };
 
